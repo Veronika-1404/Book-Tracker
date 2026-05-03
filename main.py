@@ -6,11 +6,21 @@ import subprocess
 # Файл для хранения данных
 DATA_FILE = 'books.json'
 
-# Функция загрузки данных из JSON
+# Функция загрузки данных из JSON с обработкой ошибок
 def load_books():
     if os.path.exists(DATA_FILE):
-        with open(DATA_FILE, 'r', encoding='utf-8') as f:
-            return json.load(f)
+        try:
+            with open(DATA_FILE, 'r', encoding='utf-8') as f:
+                data = json.load(f)
+                # Проверяем, что загруженные данные — это список
+                if isinstance(data, list):
+                    return data
+                else:
+                    sg.popup('Предупреждение', 'Файл books.json повреждён. Создан новый список книг.')
+                    return []
+        except json.JSONDecodeError:
+            sg.popup('Предупреждение', 'Файл books.json пуст или повреждён. Создан новый список книг.')
+            return []
     return []
 
 # Функция сохранения данных в JSON
